@@ -42,6 +42,9 @@ class Hall:
     def get_show_ids(self):  
         return [show[0] for show in self.__show_list]
 
+    def get_hallNo(self):
+        return self.__hallNo
+
 
 class StarCinema(Hall):  
     def __init__(self):
@@ -50,16 +53,18 @@ class StarCinema(Hall):
     def entry_hall(self, hall):
         self.hall_list.append(hall)
 
-
-
-
+    def hall_by_no(self, hallNo):
+        for hall in self.hall_list:
+            if hall.get_hallNo() == hallNo:
+                return hall
+        return None
 
 
 hallA = Hall(row=5, col=5, hallNo=1)
 hallB = Hall(row=5, col=5, hallNo=2)
 
 hallA.entry_show(id='101', movie_name='Superman', time='8:00 PM')
-hallA.entry_show(id='102', movie_name='Spiderman', time='9:00 PM')
+hallA.entry_show(id='102', movie_name='Spiderman', time='11:00 PM')
 
 hallB.entry_show(id='103', movie_name='Batman', time='2:00 PM')
 hallB.entry_show(id='104', movie_name='Parman', time='6:00 PM')
@@ -67,6 +72,10 @@ hallB.entry_show(id='104', movie_name='Parman', time='6:00 PM')
 cinema = StarCinema()
 cinema.entry_hall(hallA)
 cinema.entry_hall(hallB)
+
+
+
+
 
 while True:
     print("Menu : ")
@@ -79,20 +88,24 @@ while True:
 
     if opt == '1':
         for hall in cinema.hall_list:
-            print(f"Hall No : {hall._Hall__hallNo}")  
+            print(f"Hall No : {hall.get_hallNo()}")
             hall.view_show_list()
         print()
 
     elif opt == '2':
-        show_id = input("Enter Show ID : ")
-        hall = cinema.hall_by_no(show_id)
+        show_id = input("Enter Show ID : ").strip()  
+        hall = None
+        for h in cinema.hall_list:
+            if h.get_show_ids() and show_id in h.get_show_ids():
+                hall = h
+                break
         if hall:
             hall.view_available_seats(show_id)
         else:
             print("Show Not Found!")
 
     elif opt == '3':
-        show_id = input("Enter Show ID : ")
+        show_id = input("Enter Show ID : ").strip()  
         cnt = int(input("Enter The Number Of Seats To Book : "))
         booking_seat = []
 
@@ -101,7 +114,11 @@ while True:
             seat = tuple(map(int, seat_input.split('-')))
             booking_seat.append(seat)
         
-        hall = cinema.hall_by_no(show_id)
+        hall = None
+        for h in cinema.hall_list:
+            if h.get_show_ids() and show_id in h.get_show_ids():
+                hall = h
+                break
         if hall:
             hall.book_seats(show_id, booking_seat)
             print("Booking Successfully!!!")
@@ -113,3 +130,4 @@ while True:
 
     else:
         print("Please Choose A Valid Option.")
+
